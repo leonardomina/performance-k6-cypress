@@ -47,7 +47,8 @@ k6 run tests/loadTest.js --out json=tests/report.json
 ## 📌 4️⃣ Gerando o Relatório Automático
 Depois de rodar o teste e gerar o report.json, execute o script para criar um relatório HTML:
 
-node tests/generateReport.js
+node tests/generateReport.js Ou node generateReport.js
+
 Se o script rodar corretamente, verá a mensagem:
 
 ✅ Relatório gerado com sucesso: report.html
@@ -55,7 +56,7 @@ Se o script rodar corretamente, verá a mensagem:
 ### 🔹 Acessando o Relatório
 Para abrir o relatório no navegador:
 
-start tests/report.html  # Windows
+start tests/report.html ou start report.html # Windows
 xdg-open tests/report.html  # Linux
 open tests/report.html  # macOS
 
@@ -87,7 +88,7 @@ nvm install 18  # Se estiver usando NVM
 Verifique se report.json existe:
 
 ls tests/report.json
-Se não existir, execute o teste novamente:
+Se não existir, tenta o comando execute o teste novamente:
 
 k6 run tests/loadTest.js --out json=tests/report.json
 
