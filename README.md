@@ -1,150 +1,111 @@
-# 📖 Guia Completo para Testes de Carga com K6
+# 🚀 Teste de Performance com K6 e Relatório Automático 📊  
 
-Este repositório contém um teste de carga automatizado usando K6, uma ferramenta leve e eficiente para testes de performance de APIs.
+Este projeto utiliza o **K6** para testes de carga e gera relatórios automáticos em **HTML** baseados nos resultados.  
 
-## 🚀 O que você aprenderá neste guia?
+## 📌 **Pré-requisitos**  
 
-✅ Escolher e instalar a IDE correta✅ Instalar e configurar o **K6** ✅ Criar e executar um **teste de carga** ✅ Gerar relatórios para análise
+Antes de iniciar, certifique-se de ter instalado:  
 
-## 🖥️ Qual IDE Usar?
+1. **Node.js** (v18 ou superior) → [Baixe aqui](https://nodejs.org/)  
+2. **K6** (ferramenta de testes de carga)  
+3. **Git** (opcional, caso queira versionar o projeto)  
 
-O K6 não exige uma IDE específica, pois os testes são escritos em JavaScript. No entanto, recomendamos as seguintes opções:
+---
 
-### Opção 1: Visual Studio Code (VS Code)
+## 📌 **1️⃣ Instalando o K6**  
 
-Baixe e instale o VS Code.
+### 🔹 **Windows** (via Chocolatey)  
+Abra o **PowerShell como Administrador** e execute:  
+```powershell
+choco install k6 -y
+```
 
-Instale a extensão JavaScript (ES6) Code Snippets para melhorar a experiência com o JavaScript.
+### 🔹 Windows (via Scoop)
+scoop install k6
 
-Abra a pasta do projeto no VS Code.
+### 🔹 Linux/macOS
 
-### Opção 2: WebStorm (IDE da JetBrains)
+brew install k6  # macOS (via Homebrew)
+sudo apt update && sudo apt install k6 -y  # Ubuntu/Debian
 
-Baixe e instale o WebStorm.
+## 📌 2️⃣ Clonar o Repositório
+Se ainda não tiver o código, clone o projeto:
 
-Crie um novo projeto e selecione JavaScript como linguagem principal.
+git clone https://github.com/seu-usuario/seu-repositorio.git
+cd seu-repositorio
 
-Ambas as IDEs permitem a edição e depuração dos scripts K6.
-
-## 📥 Instalação do K6
-
-### Windows
-
-1️⃣ Instalação via Chocolatey
-
-Se você usa o Chocolatey, abra o PowerShell como Administrador e execute:
-
-choco install k6
-
-Após a instalação, verifique se o K6 foi instalado corretamente:
-
-k6 version
-
-2️⃣ Instalação Manual
-
-Baixe o K6 no site oficial:🔗 https://github.com/grafana/k6/releases
-
-Extraia o arquivo ZIP para C:\Program Files\k6
-
-Adicione ao PATH:
-
-Vá para Configurações do Sistema > Variáveis de Ambiente
-
-Edite a variável Path e adicione:
-
-C:\Program Files\k6
-
-Teste a instalação:
-
-k6 version
-
-### MacOS
-
-brew install k6
-
-### Linux
-
-sudo apt update && sudo apt install k6
-
-Para testar a instalação, execute:
-
-k6 version
-
-## 📂 Estrutura do Projeto
-
-k6-load-test/
-│── tests/
-│   ├── loadTest.js  # Script principal do K6
-│── results/
-│   ├── results.json  # Arquivo de saída com resultados do teste
-│── README.md
-
-## 📝 Criando um Teste de Carga
-
-No diretório tests/, crie um arquivo chamado `` com o seguinte conteúdo:
-
-import http from 'k6/http';
-import { check, sleep } from 'k6';
-
-export let options = {
-    stages: [
-        { duration: '1m', target: 100 }, // 100 usuários em 1 minuto
-        { duration: '3m', target: 500 }, // Mantém 500 usuários por 3 minutos
-        { duration: '1m', target: 0 }    // Reduz para 0 usuários em 1 minuto
-    ],
-};
-
-export default function () {
-    let res = http.get('https://jsonplaceholder.typicode.com/posts/1');
-
-    check(res, {
-        'status code is 200': (r) => r.status === 200,
-        'response time is < 500ms': (r) => r.timings.duration < 500,
-    });
-
-    sleep(1);
-}
-
-## ▶ Executando o Teste de Carga
-
-Abra o terminal e execute:
+## 📌 3️⃣ Rodando o Teste de Carga
+O script loadTest.js contém o teste de performance configurado. Para executá-lo, use:
 
 k6 run tests/loadTest.js
 
-Se quiser salvar os resultados em JSON para análise posterior, use:
+### 🔹 Gerando um relatório em JSON
+Para gerar um relatório em JSON:
 
-k6 run tests/loadTest.js --out json=results/results.json
+k6 run tests/loadTest.js --out json=tests/report.json
 
-📊 Analisando os Resultados
+## 📌 4️⃣ Gerando o Relatório Automático
+Depois de rodar o teste e gerar o report.json, execute o script para criar um relatório HTML:
 
-Após a execução, o K6 exibe métricas no terminal, como:
+node tests/generateReport.js
+Se o script rodar corretamente, verá a mensagem:
 
-✅ http_req_duration → Tempo médio de resposta da API.
+✅ Relatório gerado com sucesso: report.html
 
-✅ http_req_failed → Percentual de requisições que falharam.
+### 🔹 Acessando o Relatório
+Para abrir o relatório no navegador:
 
-✅ reqs/sec → Requisições por segundo.
+start tests/report.html  # Windows
+xdg-open tests/report.html  # Linux
+open tests/report.html  # macOS
 
-Se quiser visualizar os resultados em gráficos interativos, pode utilizar o Grafana e InfluxDB:
+## 📌 5️⃣ Estrutura do Projeto
 
-1️⃣ Instalar o InfluxDB para armazenar os dados
-
-docker run -d --name influxdb -p 8086:8086 influxdb
-
-2️⃣ Executar o teste enviando os dados para o InfluxDB
-
-k6 run tests/loadTest.js --out influxdb=http://localhost:8086/k6
-
-3️⃣ Configurar o Grafana para exibir os dados
-
-Baixe e instale o Grafana:🔗 Download do Grafana
-
-Configure um painel conectado ao InfluxDB.
-
-#📜 Conclusão
-
-Agora você pode rodar testes de carga de forma eficiente com K6, visualizar relatórios detalhados e analisar o desempenho da API sob carga.
-
-##📖 Para mais informações, consulte a Documentação Oficial do K6.
+performance-K6-cypress/
+│── tests/
+│   ├── loadTest.js       # Script do K6 para teste de carga
+│   ├── generateReport.js # Script para gerar o relatório em HTML
+│   ├── report.json       # Arquivo JSON com os resultados do K6
+│   ├── report.html       # Relatório final gerado automaticamente
+│── README.md             # Documentação do projeto
 
 
+## 📌 6️⃣ Solução de Problemas (FAQ)
+### 🔹 Erro: "k6: command not found"
+Isso significa que o K6 não foi instalado corretamente. Tente reinstalar usando:
+
+choco install k6 -y  # Windows (Chocolatey)
+scoop install k6  # Windows (Scoop)
+brew install k6  # macOS (Homebrew)
+sudo apt install k6 -y  # Ubuntu/Debian
+
+### 🔹 Erro: "Cannot find module 'fs'"
+O módulo fs é nativo do Node.js. Se der erro, reinstale o Node.js:
+
+nvm install 18  # Se estiver usando NVM
+### 🔹 O relatório HTML não é gerado
+Verifique se report.json existe:
+
+ls tests/report.json
+Se não existir, execute o teste novamente:
+
+k6 run tests/loadTest.js --out json=tests/report.json
+
+## 📌 7️⃣ Melhorias Futuras 🚀
+
+### 🔹 Exportar relatório para PDF 📄
+### 🔹 Adicionar gráficos interativos (Chart.js) 📊
+### 🔹 Automação com CI/CD (GitHub Actions)
+
+## 📌 8️⃣ Contribuição
+Sinta-se à vontade para contribuir! Faça um fork do repositório e envie um Pull Request. 😃
+
+🔗 [Seu GitHub](https://github.com/leonardomina?tab=repositories)
+
+Agora seu projeto está bem documentado e qualquer pessoa pode rodá-lo facilmente! 🚀🔥
+Se precisar de alguma modificação, me avise! 😊
+
+---
+
+Esse **README.md** está pronto para ser usado no seu projeto.  
+Caso queira **personalizar algo**, é só me dizer! 🚀🔥
