@@ -44,4 +44,3 @@ const htmlReport = `
 // Salvar o relatório como um arquivo HTML
 fs.writeFileSync('report.html', htmlReport);
 console.log('✅ Relatório gerado com sucesso: report.html');
-
